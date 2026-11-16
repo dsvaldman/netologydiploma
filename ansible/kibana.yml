@@ -1,0 +1,37 @@
+- name: kibana
+  hosts: kibana
+  tasks:
+    - name: coping deb package to node
+      become: true
+      copy:
+        src: /home/daniil/ansiblediploma/kibana-8.2.3-amd64.deb
+        dest: /home
+
+    - name: installing package
+      become: true
+      apt: deb="/home/kibana-8.2.3-amd64.deb"
+
+    - name: enabling kibana
+      become: true
+      ansible.builtin.service:
+        name: kibana.service
+        enabled: yes
+
+    - name: starting kibana
+      become: true
+      ansible.builtin.service:
+        name: kibana.service
+        state: started
+    
+    - name: coping config
+      become: true 
+      copy:
+        src: /home/daniil/ansiblediploma/elasticsearch/kibana.yml
+        dest: /etc/kibana
+
+    - name: restarting kibana
+      become: true
+      ansible.builtin.service:
+        name: kibana
+        state: restarted 
+        enabled: true

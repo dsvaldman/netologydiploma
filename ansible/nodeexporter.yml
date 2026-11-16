@@ -1,0 +1,22 @@
+---
+- name: nodeexporter
+  hosts: webserver1, webserver2
+  tasks:
+    - name: installing node-exporter
+      become: true
+      apt:
+        name: prometheus-node-exporter
+        state: present
+      with_items:
+        - prometheus-node-exporter
+
+    - name: changing rules
+      become: true
+      action: shell chmod 644 /var/log/nginx/access.log && chmod 644 /var/log/nginx/error.log
+
+    - name: downloading Nginx Log Exporter
+      action: shell wget https://github.com/martin-helmich/prometheus-nginxlog-exporter/releases/download/v1.8.0/prometheus-nginxlog-exporter_1.8.0_linux_amd64.deb
+
+    - name: istaling Nginx Log Exporter
+      become: true
+      action: shell apt install ./prometheus-nginxlog-exporter_1.8.0_linux_amd64.deb

@@ -1,0 +1,30 @@
+---
+- name: nginx
+  hosts: webserver1, webserver2
+  tasks:
+          - name: installing nginx
+            become: true
+            apt:
+              name: nginx
+              state: present
+            with_items:
+              - nginx
+
+          - name: pulling configs
+            become: true
+            copy: 
+              src: /home/daniil/ansiblediploma/nginx.conf 
+              dest: /etc/nginx/
+
+          - name: coping index.html
+            become: true
+            copy:
+                    src: /home/daniil/ansiblediploma/index.html
+                    dest: /var/www/html
+
+          - name: restarting nginx
+            become: true
+            ansible.builtin.service:
+             name: nginx
+             state: restarted 
+             enabled: true

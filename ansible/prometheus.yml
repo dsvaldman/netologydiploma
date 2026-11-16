@@ -1,0 +1,24 @@
+---
+- name: prometheus
+  hosts: prometheus
+  tasks:
+    - name: installing prometheus
+      become: true
+      apt:
+        name: prometheus
+        state: present
+      with_items:
+        - prometheus
+
+    - name: coping configs
+      become: true
+      copy:
+        src: /home/daniil/ansiblediploma/prometheus/prometheus.yml
+        dest: /etc/prometheus/
+
+    - name: restarting prometheus
+      become: true
+      ansible.builtin.service:
+       name: prometheus
+       state: restarted 
+       enabled: true

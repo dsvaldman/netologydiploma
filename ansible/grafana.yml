@@ -1,0 +1,36 @@
+---
+- name: grafana
+  hosts: grafana
+  tasks:
+
+    - name: adding key for repo
+      become: true
+      action: shell wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
+
+    - name: adding repo
+      become: true
+      action: shell echo "deb https://packages.grafana.com/enterprise/deb stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+
+    - name: updating repos 
+      become: true
+      action: shell apt-get update
+
+    - name: installing grafana
+      become: true
+      apt:
+        name: grafana
+        state: present
+      with_items:
+        - grafana
+
+    - name: enabling grafana
+      become: true
+      ansible.builtin.service:
+        name: grafana-server.service
+        enabled: yes
+
+    - name: starting grafana
+      become: true
+      ansible.builtin.service:
+        name: grafana-server.service
+        state: started

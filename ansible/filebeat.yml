@@ -1,0 +1,47 @@
+- name: filebeat
+  hosts: webserver1, webserver2
+  tasks:
+    - name: coping deb package to node
+      become: true
+      copy:
+        src: /home/daniil/ansiblediploma/filebeat-8.2.3-amd64.deb
+        dest: /home
+
+    - name: installing package
+      become: true
+      apt: deb="/home/filebeat-8.2.3-amd64.deb"
+
+    - name: enabling filebeat
+      become: true
+      ansible.builtin.service:
+        name: filebeat.service
+        enabled: yes
+
+    - name: starting filebeat
+      become: true
+      ansible.builtin.service:
+        name: filebeat.service
+        state: started
+
+    - name: enabling module nginx
+      become: true
+      action: shell filebeat modules enable nginx
+    
+    - name: coping module config
+      become: true
+      copy:
+        src: /home/daniil/ansiblediploma/elasticsearch/nginx.yml
+        dest: /etc/filebeat/modules.d
+    
+    - name: coping config
+      become: true 
+      copy:
+        src: /home/daniil/ansiblediploma/elasticsearch/filebeat.yml
+        dest: /etc/filebeat
+    
+    - name: restarting filebeat
+      become: true
+      ansible.builtin.service:
+       name: filebeat
+       state: restarted 
+       enabled: true

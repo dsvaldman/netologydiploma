@@ -1,0 +1,38 @@
+---
+- name: elasticsearch
+  hosts: elasticsearch
+  tasks:
+    - name: coping deb package to node
+      become: true
+      copy:
+        src: /home/daniil/ansiblediploma/elasticsearch-8.2.3-amd64.deb
+        dest: /home
+    
+    - name: installing package
+      become: true
+      apt: deb="/home/elasticsearch-8.2.3-amd64.deb"
+
+    - name: enabling elasticsearch
+      become: true
+      ansible.builtin.service:
+        name: elasticsearch.service
+        enabled: yes
+
+    - name: starting elasticsearch
+      become: true
+      ansible.builtin.service:
+        name: elasticsearch.service
+        state: started
+
+    - name: coping configs
+      become: true
+      copy:
+        src: /home/daniil/ansiblediploma/elasticsearch/elasticsearch.yml
+        dest: /etc/elasticsearch
+
+    - name: restarting elasticsearch
+      become: true
+      ansible.builtin.service:
+       name: elasticsearch
+       state: restarted 
+       enabled: true
